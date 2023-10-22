@@ -1,9 +1,11 @@
+import 'express-async-errors';
 import * as dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 const app = express();
 import morgan from "morgan";
 import { nanoid } from "nanoid";
+import mongoose from 'mongoose';
 
 let jobs = [
   { id: nanoid(), company: "apple", position: "front-end" },
@@ -12,6 +14,9 @@ let jobs = [
 
 //routers
 import jobRouter from './routes/jobRouter.js';
+
+// middleware
+import errorHandlerMiddleware from './middleware/errorHandlerMiddleware.js';
 
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
@@ -42,8 +47,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ msg: "something went wrong" });
 });
 
+app.use(errorHandlerMiddleware);
+
 const port = process.env.PORT || 5100;
 
-app.listen(port, () => {
-  console.log(`server running on PORT ${port}...`);
-});
+try {
+  await mongoose.connect(process.env.MONGO_URL);
+  app.listen(port, () => {
+    console.log(`server running on PORT ${port}....`);
+  });
+} catch (error) {
+  console.log(error);
+  process.exit(1);
+}
