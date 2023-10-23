@@ -4,13 +4,8 @@ dotenv.config();
 import express from "express";
 const app = express();
 import morgan from "morgan";
-import { nanoid } from "nanoid";
 import mongoose from 'mongoose';
 
-let jobs = [
-  { id: nanoid(), company: "apple", position: "front-end" },
-  { id: nanoid(), company: "google", position: "back-end" },
-];
 
 //routers
 import jobRouter from './routes/jobRouter.js';
